@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRG_Assignment
 {
-    internal class Flight
+    abstract class Flight
     {
         public string FlightNumber { get; set; }
         public string Orign { get; set; }
@@ -22,7 +22,5 @@ namespace PRG_Assignment
             ExpectedTime = expectedtime;
             Status = status;
         }
-
-
     }
 }

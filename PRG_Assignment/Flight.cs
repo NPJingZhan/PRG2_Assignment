@@ -22,5 +22,9 @@ namespace PRG_Assignment
             ExpectedTime = expectedtime;
             Status = status;
         }
+        public virtual string ToString()
+        {
+            return $"{FlightNumber} {Orign} {Destination} {ExpectedTime}";
+        }
     }
 }

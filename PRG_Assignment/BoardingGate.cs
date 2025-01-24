@@ -22,5 +22,9 @@ namespace PRG_Assignment
             SupportsLWTT = supportsLWTT;
             Flight = flight;
         }
+        public override string ToString()
+        {
+            return $"{GateName, -16} {SupportsCFFT,-8} {SupportsDDJB, -8} {SupportsLWTT, -8}";
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using PRG_Assignment;
 
 Dictionary<string, Airline> airlineDict = new Dictionary<string, Airline>();
-Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>();
+Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>(); //string --> Special Request Code & Values<T> --> List<Flight>
 Dictionary<string, BoardingGate> boardinggateDict = new Dictionary<string, BoardingGate>();
 
 Console.WriteLine("Loading Airlines...");
@@ -38,24 +38,47 @@ for (int i = 1; i < flights.Length; i++)
     switch (src)
     {
         case "":
-            NORMFlight norm = new(flightno, origin, destination, expectedarrival, "On Time");
-            flightsDict["NORMFlight"] = norm;
+            Flight norm = new NORMFlight(flightno, origin, destination, expectedarrival, "On Time");
+            flightsDict[flightno] = norm;
             break;
         case "CFFT":
-            CFFTFlight cfft = new(150, flightno, origin, destination, expectedarrival, "On Time");
-            flightsDict["CFFTFlight"] = cfft;
+            Flight cfft = new CFFTFlight(150, flightno, origin, destination, expectedarrival, "On Time");
+            flightsDict[flightno] = cfft;
             break;
         case "DDJB":
-            DDJBFlight ddjb = new(300, flightno, origin, destination, expectedarrival, "On Time");
-            flightsDict["DDJBFlight"] = ddjb;
+            Flight ddjb = new DDJBFlight(300, flightno, origin, destination, expectedarrival, "On Time");
+            flightsDict[flightno] = ddjb;
             break;
         case "LWTT":
-            LWTTFlight lwtt = new(500, flightno, origin, destination, expectedarrival, "On Time");
-            flightsDict["LWTTFlight"] = lwtt;
+            Flight lwtt = new LWTTFlight(500, flightno, origin, destination, expectedarrival, "On Time");
+            flightsDict[flightno] = lwtt;
             break;
     }
 }
 Console.WriteLine(flights.Count() - 1 + " Flights Loaded!");
+Flight Searchflight(Dictionary<string, Flight> flightsDict, string flightno)
+{
+    foreach (string flight in flightsDict.Keys)
+    {
+        if (flightno == flight)
+        {
+            return flightsDict[flightno];
+        }
+    }
+    return null;
+}
+
+BoardingGate SearchBoardingGate(Dictionary<string, BoardingGate> boardinggateDict, string bgno)
+{
+    foreach (string boarding_gate in boardinggateDict.Keys)
+    {
+        if (boarding_gate == bgno)
+        {
+            return boardinggateDict[bgno];
+        }
+    }
+    return null;
+}
 
 while (true)
 {
@@ -72,46 +95,136 @@ while (true)
     Console.WriteLine("0. Exit");
     Console.WriteLine("");
     Console.WriteLine("Please enter your option:");
-    int option = Convert.ToInt32(Console.ReadLine());
+
     try
     {
+        int option = Convert.ToInt32(Console.ReadLine());
         if (option < 0 || option > 7)
         {
             throw new ArgumentOutOfRangeException("x");
         }
+        if (option == 0)
+        {
+            Console.WriteLine("Goodbye");
+            break;
+        }
+        switch (option)
+        {
+            case 1: //List Flights
+                Console.WriteLine("=============================================");
+                Console.WriteLine("List of Flights for Changi Airport Terminal 5");
+                Console.WriteLine("=============================================");
+                string[] flightsheading = flights[0].Split(',');
+                Console.WriteLine($"{flightsheading[0],-16} {flightsheading[1],-20} {flightsheading[2],-25} {flightsheading[3]} Time");
+                foreach (var flight in flightsDict.Values)
+                {
+                    Console.WriteLine(flight.ToString());
+                }
+                Console.WriteLine("");
+                while (true)
+                {
+                    Console.WriteLine("Enter B to return to Main Menu");
+                    string b = Console.ReadLine();
+                    if (b.ToUpper() != "B")
+                    {
+                        Console.WriteLine("Invalid Input.");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("");
+                break;
+            case 2:
+                Console.WriteLine("=============================================");
+                Console.WriteLine("List of Boarding Gates for Changi Airport Terminal 5");
+                Console.WriteLine("=============================================");
+                string[] boardinggateheading = boardinggates[0].Split(",");
+                Console.WriteLine($"{boardinggateheading[0], -16} {boardinggateheading[1], -8} {boardinggateheading[2],-8} {boardinggateheading[3],-8}");
+                foreach (var boardinggate in boardinggateDict.Values)
+                {
+                    Console.WriteLine(boardinggate.ToString());
+                }
+                Console.WriteLine("");
+                while (true)
+                {
+                    Console.WriteLine("Enter B to return to Main Menu");
+                    string? b = Console.ReadLine();
+                    if (b.ToUpper() != "B")
+                    {
+                        Console.WriteLine("Invalid Input.");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("");
+                break;
+            case 3:
+                Flight flightvalid = null;
+                BoardingGate bgvalid = null;
+
+                Console.WriteLine("=============================================");
+                Console.WriteLine("Assign a Boarding Gate to a Flight");
+                Console.WriteLine("=============================================");
+                while (true)
+                {
+                    Console.WriteLine("Enter flight number: ");
+                    string flightno = Console.ReadLine().ToUpper();
+                    flightvalid = Searchflight(flightsDict, flightno);
+                    if (flightvalid is not null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Flight Number");
+                        Console.WriteLine("");
+                    }
+                }
+                while (true)
+                {
+                    Console.WriteLine("Enter Boarding Gate Name:");
+                    string bgno = Console.ReadLine().ToUpper();
+                    bgvalid = SearchBoardingGate(boardinggateDict, bgno);
+                    if (bgvalid is not null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Boarding Gate Number");
+                        Console.WriteLine("");
+                    }
+                }
+                Console.WriteLine($"Flight Number: {flightvalid.FlightNumber}");
+                Console.WriteLine($"Origin: {flightvalid.Orign}");
+                Console.WriteLine($"Destination: {flightvalid.Destination}");
+                Console.WriteLine($"Expected Time: {flightvalid.ExpectedTime}");
+                Console.WriteLine("");
+                break;
+            case 4:
+                Console.WriteLine("");
+                break;
+            case 5:
+                Console.WriteLine("");
+                break;
+            case 6:
+                Console.WriteLine("");
+                break;
+            case 7:
+                Console.WriteLine("");
+                break;
+        }
+    }
+    catch (FormatException)
+    {
+        Console.WriteLine("INVALID OPTION");
     }
     catch
     {
         Console.WriteLine("INVALID OPTION");
-    }
-
-    if (option == 0)
-    {
-        Console.WriteLine("Goodbye");
-        break;
-    }
-    switch (option)
-    {
-        case 1:
-            Console.WriteLine("");
-            break;
-        case 2:
-            Console.WriteLine("");
-            break;
-        case 3:
-            Console.WriteLine("");
-            break;
-        case 4:
-            Console.WriteLine("");
-            break;
-        case 5:
-            Console.WriteLine("");
-            break;
-        case 6:
-            Console.WriteLine("");
-            break;
-        case 7:
-            Console.WriteLine("");
-            break;
     }
 }

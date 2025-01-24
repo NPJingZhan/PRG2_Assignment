@@ -13,5 +13,10 @@ namespace PRG_Assignment
         {
             RequestFee = requestFee;
         }
+        public override string ToString()
+        {
+            return $"{FlightNumber,-16} {Orign,-20} {Destination,-25} {ExpectedTime}";
+        }
     }
 }
+

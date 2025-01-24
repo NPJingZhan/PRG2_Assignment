@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sjing\\source\\repos\\PRG2_Assignment\\PRG_Assignment\\PRG_Assignment.csproj",
+      "projectUniqueName": "C:\\Users\\sjing\\OneDrive\\Documents\\NGEE ANN (Laptop)\\OneDrive\\NGEE ANN SCHOOL\\PRG2\\PRG2_Assignment\\PRG_Assignment\\PRG_Assignment.csproj",
       "projectName": "PRG_Assignment",
-      "projectPath": "C:\\Users\\sjing\\source\\repos\\PRG2_Assignment\\PRG_Assignment\\PRG_Assignment.csproj",
+      "projectPath": "C:\\Users\\sjing\\OneDrive\\Documents\\NGEE ANN (Laptop)\\OneDrive\\NGEE ANN SCHOOL\\PRG2\\PRG2_Assignment\\PRG_Assignment\\PRG_Assignment.csproj",
       "packagesPath": "C:\\Users\\sjing\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sjing\\source\\repos\\PRG2_Assignment\\PRG_Assignment\\obj\\",
+      "outputPath": "C:\\Users\\sjing\\OneDrive\\Documents\\NGEE ANN (Laptop)\\OneDrive\\NGEE ANN SCHOOL\\PRG2\\PRG2_Assignment\\PRG_Assignment\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

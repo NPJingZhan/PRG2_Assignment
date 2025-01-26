@@ -42,22 +42,80 @@ for (int i = 1; i < flights.Length; i++)
         case "":
             Flight norm = new NORMFlight(flightno, origin, destination, expectedarrival, "On Time");
             flightsDict[flightno] = norm;
+            foreach (string airline in airlineDict.Keys)
+            {
+                if (airline == flightno[..2])
+                {
+                    airlineDict[airline].AddFlight(norm);
+                }
+            }
             break;
         case "CFFT":
             Flight cfft = new CFFTFlight(150, flightno, origin, destination, expectedarrival, "On Time");
             flightsDict[flightno] = cfft;
+            foreach (string airline in airlineDict.Keys)
+            {
+                if (airline == flightno[..2])
+                {
+                    airlineDict[airline].AddFlight(cfft);
+                }
+            }
             break;
         case "DDJB":
             Flight ddjb = new DDJBFlight(300, flightno, origin, destination, expectedarrival, "On Time");
             flightsDict[flightno] = ddjb;
+            foreach (string airline in airlineDict.Keys)
+            {
+                if (airline == flightno[..2])
+                {
+                    airlineDict[airline].AddFlight(ddjb);
+                }
+            }
             break;
         case "LWTT":
             Flight lwtt = new LWTTFlight(500, flightno, origin, destination, expectedarrival, "On Time");
             flightsDict[flightno] = lwtt;
+            foreach (string airline in airlineDict.Keys)
+            {
+                if (airline == flightno[..2])
+                {
+                    airlineDict[airline].AddFlight(lwtt);
+                }
+            }
             break;
     }
+   
 }
 Console.WriteLine(flights.Count() - 1 + " Flights Loaded!");
+
+void ReturnToMenu()
+{
+    while (true)
+    {
+        Console.WriteLine("Enter B to return to Main Menu");
+        string? b = Console.ReadLine();
+        if (b.ToUpper() != "B")
+        {
+            Console.WriteLine("Invalid Input.");
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+Airline SearchAirline(Dictionary<string, Airline> airlineDict, string input)
+{
+    foreach (string airline in airlineDict.Keys)
+    {
+        if (input == airline)
+        {
+            return airlineDict[input];
+        }
+    }
+    return null;
+}
 Flight Searchflight(Dictionary<string, Flight> flightsDict, string flightno)
 {
     foreach (string flight in flightsDict.Keys)
@@ -115,7 +173,7 @@ while (true)
         }
         switch (option)
         {
-            case 1: //List Flights
+            case 1:
                 Console.WriteLine("=============================================");
                 Console.WriteLine("List of Flights for Changi Airport Terminal 5");
                 Console.WriteLine("=============================================");
@@ -126,19 +184,7 @@ while (true)
                     Console.WriteLine(flight.ToString());
                 }
                 Console.WriteLine("");
-                while (true)
-                {
-                    Console.WriteLine("Enter B to return to Main Menu");
-                    string b = Console.ReadLine();
-                    if (b.ToUpper() != "B")
-                    {
-                        Console.WriteLine("Invalid Input.");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                ReturnToMenu();
                 Console.WriteLine("");
                 break;
             case 2:
@@ -152,19 +198,7 @@ while (true)
                     Console.WriteLine(boardinggate.ToString());
                 }
                 Console.WriteLine("");
-                while (true)
-                {
-                    Console.WriteLine("Enter B to return to Main Menu");
-                    string? b = Console.ReadLine();
-                    if (b.ToUpper() != "B")
-                    {
-                        Console.WriteLine("Invalid Input.");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                ReturnToMenu();
                 Console.WriteLine("");
                 break;
             case 3:
@@ -286,6 +320,8 @@ while (true)
                 }
                 bgvalid.Flight = flightvalid;
                 Console.WriteLine($"Flight {flightvalid.FlightNumber} has been assigned to Boarding Gate {bgvalid.GateName}!");
+                Console.WriteLine("");
+                ReturnToMenu();
                 Console.WriteLine("");
                 break;
             case 4:
@@ -439,10 +475,49 @@ while (true)
                             break;
                         }
                     }
-                }  
+                }
+                Console.WriteLine("");
+                ReturnToMenu();
                 Console.WriteLine("");
                 break;
             case 5:
+                Airline airlinevalid = null;
+
+                Console.WriteLine("=============================================");
+                Console.WriteLine("List of Airlines for Changi Airport Terminal 5");
+                Console.WriteLine("=============================================");
+                string[] airlineheading = airlines[0].Split(",");
+                Console.WriteLine($"{airlineheading[0],-18} {airlineheading[1]}");
+                foreach (var airline in airlineDict)
+                {
+                    Console.WriteLine($"{airline.Key,-18} {airline.Value.Name}");
+                }
+
+                while (true)
+                {
+                    Console.WriteLine("Enter Airline Code:");
+                    string airlinecode = Console.ReadLine().ToUpper();
+                    airlinevalid = SearchAirline(airlineDict, airlinecode);
+                    if (airlinevalid == null)
+                    {
+                        Console.WriteLine("Airline not found. Please enter a valid Airline");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("=============================================");
+                Console.WriteLine($"List of Flights for {airlinevalid.Name}");
+                Console.WriteLine("=============================================");
+                flightsheading = flights[0].Split(',');
+                Console.WriteLine($"{flightsheading[0],-16} {flightsheading[1],-20} {flightsheading[2],-25} {flightsheading[3]} Time");
+                foreach (var airlinee in airlinevalid.Flights)
+                {
+                    Console.WriteLine(airlinee.Value.ToString());
+                }
+                Console.WriteLine("");
+                ReturnToMenu();
                 Console.WriteLine("");
                 break;
             case 6:

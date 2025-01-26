@@ -1,7 +1,7 @@
 ﻿using PRG_Assignment;
 
 Dictionary<string, Airline> airlineDict = new Dictionary<string, Airline>();
-Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>(); //string --> Special Request Code & Values<T> --> List<Flight>
+Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>();
 Dictionary<string, BoardingGate> boardinggateDict = new Dictionary<string, BoardingGate>();
 
 Console.WriteLine("Loading Airlines...");
@@ -181,7 +181,6 @@ while (true)
                     else
                     {
                         Console.WriteLine("Invalid Flight Number");
-                        Console.WriteLine("");
                     }
                 }
                 while (true)
@@ -196,13 +195,91 @@ while (true)
                     else
                     {
                         Console.WriteLine("Invalid Boarding Gate Number");
-                        Console.WriteLine("");
                     }
                 }
                 Console.WriteLine($"Flight Number: {flightvalid.FlightNumber}");
                 Console.WriteLine($"Origin: {flightvalid.Orign}");
                 Console.WriteLine($"Destination: {flightvalid.Destination}");
                 Console.WriteLine($"Expected Time: {flightvalid.ExpectedTime}");
+                if (flightvalid is NORMFlight)
+                {
+                    Console.WriteLine("Special Request Code: None");
+                }
+                else if (flightvalid is CFFTFlight)
+                {
+                    Console.WriteLine("Special Request Code: CFFT");
+                }
+                else if (flightvalid is DDJBFlight)
+                {
+                    Console.WriteLine("Special Request Code: DDJB");
+                }
+                else
+                {
+                    Console.WriteLine("Special Request Code: LWTT");
+                }
+                Console.WriteLine($"Boarding Gate Name: {bgvalid.GateName}");
+                Console.WriteLine($"Supports DDJB: {bgvalid.SupportsDDJB}");
+                Console.WriteLine($"Supports CFFT: {bgvalid.SupportsCFFT}");
+                Console.WriteLine($"Supports LWTT: {bgvalid.SupportsLWTT}");
+                while (true)
+                {
+                    Console.WriteLine("Would you like to update the status of the flight? (Y/N)");
+                    try
+                    {
+                        string? YorN = Console.ReadLine()?.ToUpper();
+                        if (YorN == "Y")
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Console.WriteLine("1. Delayed");
+                                    Console.WriteLine("2. Boarding");
+                                    Console.WriteLine("3. On Time");
+                                    Console.WriteLine("Please select the new status of the flight: ");
+                                    int statusoption = Convert.ToInt32(Console.ReadLine());
+                                    if (statusoption == 1)
+                                    {
+                                        flightvalid.Status = "Delayed";
+                                        break;
+                                    }
+                                    else if (statusoption == 2)
+                                    {
+                                        flightvalid.Status = "Boarding";
+                                        break;
+                                    }
+                                    else if (statusoption == 3)
+                                    {
+                                        flightvalid.Status = "On Time";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception();
+                                    }
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("Invalid Input");
+                                }
+                            }
+                            break;
+                        }
+                        else if (YorN == "N")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid Input");
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Invalid Input");
+                    }
+                }
+                Console.WriteLine($"Flight {flightvalid.FlightNumber} has been assigned to Boarding Gate {bgvalid.GateName}!");
                 Console.WriteLine("");
                 break;
             case 4:
@@ -219,12 +296,9 @@ while (true)
                 break;
         }
     }
-    catch (FormatException)
-    {
-        Console.WriteLine("INVALID OPTION");
-    }
     catch
     {
         Console.WriteLine("INVALID OPTION");
+        Console.WriteLine("");
     }
 }

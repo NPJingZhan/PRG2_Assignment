@@ -1,4 +1,6 @@
 ﻿using PRG_Assignment;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 Dictionary<string, Airline> airlineDict = new Dictionary<string, Airline>();
 Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>();
@@ -10,7 +12,7 @@ for (int i = 1; i < airlines.Length; i++)
 {
     string[] airline = airlines[i].Split(",");
     Airline airlineobj = new(airline[0], airline[1]);
-    airlineDict[airline[0]] = airlineobj;
+    airlineDict[airline[1]] = airlineobj;
 }
 Console.WriteLine(airlines.Count() - 1 + " Airlines Loaded!");
 
@@ -80,6 +82,9 @@ BoardingGate SearchBoardingGate(Dictionary<string, BoardingGate> boardinggateDic
     return null;
 }
 
+Console.WriteLine("");
+Console.WriteLine("");
+
 while (true)
 {
     Console.WriteLine("=============================================");
@@ -141,7 +146,7 @@ while (true)
                 Console.WriteLine("List of Boarding Gates for Changi Airport Terminal 5");
                 Console.WriteLine("=============================================");
                 string[] boardinggateheading = boardinggates[0].Split(",");
-                Console.WriteLine($"{boardinggateheading[0], -16} {boardinggateheading[1], -8} {boardinggateheading[2],-8} {boardinggateheading[3],-8}");
+                Console.WriteLine($"{boardinggateheading[0],-16} {boardinggateheading[1],-8} {boardinggateheading[2],-8} {boardinggateheading[3],-8}");
                 foreach (var boardinggate in boardinggateDict.Values)
                 {
                     Console.WriteLine(boardinggate.ToString());
@@ -279,10 +284,162 @@ while (true)
                         Console.WriteLine("Invalid Input");
                     }
                 }
+                bgvalid.Flight = flightvalid;
                 Console.WriteLine($"Flight {flightvalid.FlightNumber} has been assigned to Boarding Gate {bgvalid.GateName}!");
                 Console.WriteLine("");
                 break;
             case 4:
+                void ValidateFlightNumFormat(string input)
+                {
+                    string pattern = @"^[A-Z]{2} \d{3}$";
+
+                    if (!Regex.IsMatch(input, pattern))
+                    {
+                        throw new FormatException($"'{input}' is not in the required format 'AA 123' (two letters, a space, and three digits).");
+                    }
+                }
+
+                void ValidateCountryFormat(string input)
+                {
+                    string pattern = @"^[A-Za-z]+ \([A-Z]{3}\)$";
+
+                    if (!Regex.IsMatch(input, pattern))
+                    {
+                        throw new FormatException($"'{input}' is not in the required format 'AA 123' (two letters, a space, and three digits).");
+                    }
+                }
+
+                while (true)
+                {
+                    string flightnum = null;
+                    string flightorigin = null;
+                    string flightdest = null;
+                    string src = null;
+                    DateTime flightexpect = DateTime.MinValue;
+
+                    while (true)
+                    {
+                        Console.Write("Enter Flight Number (XX 123): ");
+                        try
+                        {
+                            flightnum = Console.ReadLine().ToUpper();
+                            ValidateFlightNumFormat(flightnum);
+                            break;
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Input must be in the format 'XX 123' e.g. 'SP 420'");
+                        }
+                    }
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write("Enter Origin: ");
+                            flightorigin = Console.ReadLine();
+                            ValidateCountryFormat(flightorigin);
+                            break;
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Input must be in the format 'City (XXX)' e.g. 'Dubai (DUB)'");
+                        }
+                    }
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write("Enter Destination: ");
+                            flightdest = Console.ReadLine();
+                            ValidateCountryFormat(flightdest);
+                            break;
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Input must be in the format 'City (XXX)' e.g. 'Dubai (DUB)'");
+                        }                      
+                    }
+
+                    if (flightdest == flightorigin)
+                    {
+                        Console.WriteLine("Starting Over...");
+                        Console.WriteLine("");
+                    }
+                    else
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write("Enter Expected Departure/Arrival Time (dd/mm/yyyy hh:mm): ");
+                                flightexpect = Convert.ToDateTime(Console.ReadLine());
+                                break;
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Input must be in the format 'dd/mm/yyyy hh:mm' e.g. '21/9/2024 15:40'");
+                            }
+                        }
+                        while (true)
+                        {
+                            Console.Write("Enter Special Request Code (CFFT/DDJB/LWTT/None): ");
+                            src = Console.ReadLine().ToUpper();
+                            if (src == "NONE")
+                            {
+                                Flight norm = new NORMFlight(flightnum, flightorigin, flightdest, flightexpect, "On Time");
+                                flightsDict[flightnum] = norm;
+                                break;
+                            }
+                            else if (src == "CFFT")
+                            {
+                                Flight cfft = new CFFTFlight(150, flightnum, flightorigin, flightdest, flightexpect, "On Time");
+                                flightsDict[flightnum] = cfft;
+                                break;
+                            }
+                            else if (src == "DDJB")
+                            {
+                                Flight ddjb = new DDJBFlight(300, flightnum, flightorigin, flightdest, flightexpect, "On Time");
+                                flightsDict[flightnum] = ddjb;
+                                break;
+                            }
+                            else if (src == "LWTT")
+                            {
+                                Flight lwtt = new LWTTFlight(500, flightnum, flightorigin, flightdest, flightexpect, "On Time");
+                                flightsDict[flightnum] = lwtt;
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Enter a valid Special Request Code");
+                            }
+                        }
+                        Console.WriteLine($"Flight {flightnum} has been added!");
+
+                        string choice = null;
+                        while (true)
+                        {
+                            Console.Write("Would you like to add another flight? (Y/N) ");
+                            choice = Console.ReadLine().ToUpper();
+                            if (choice != "Y" && choice != "N")
+                            {
+                                Console.WriteLine("Invalid Option");
+                                continue;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        if (choice == "Y")
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }  
                 Console.WriteLine("");
                 break;
             case 5:

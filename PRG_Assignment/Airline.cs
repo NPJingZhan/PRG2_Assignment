@@ -18,6 +18,14 @@ namespace PRG_Assignment
             Code = code;
         }
 
-
+        public bool AddFlight(Flight flight)
+        {
+            if (Flights.ContainsKey(flight.FlightNumber))
+            {
+                return false;
+            }
+            Flights[flight.FlightNumber] = flight;
+            return true;
+        }
     }
 }

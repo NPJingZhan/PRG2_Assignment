@@ -462,12 +462,10 @@ while (true)
                             if(src == "NONE")
                             {
                                 writer.WriteLine($"{flightnum},{flightorigin},{flightdest},{flightexpect},");
-                                Console.WriteLine("PUTANG INA MO");
                             }
                             else
                             {
                                 writer.WriteLine($"{flightnum},{flightorigin},{flightdest},{flightexpect},{src}");
-                                Console.WriteLine("BOBO TANGA");
                             }
                         }
                         Console.WriteLine($"Flight {flightnum} has been added!");

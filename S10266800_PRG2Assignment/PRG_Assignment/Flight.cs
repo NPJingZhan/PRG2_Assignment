@@ -27,9 +27,29 @@ namespace PRG_Assignment
             ExpectedTime = expectedtime;
             Status = status;
         }
-        public virtual string ToString()
+        public override string ToString()
         {
             return $"{FlightNumber} {Orign} {Destination} {ExpectedTime}";
+        }
+        public virtual double CalculateFees(double origin)
+        {
+            if (Destination == "Singapore(SIN)")
+            {
+                origin += 500;
+            }
+            if (Orign == "Singapore (SIN)")
+            {
+                origin += 800;
+            }
+            if (Orign == "Dubai (DXB)" || Orign == "Bangkok (BKK)" || Orign == "Tokyo (NRT)")
+            {
+                origin -= 25;
+            }
+            if (ExpectedTime.TimeOfDay < new TimeSpan(11, 0, 0) || ExpectedTime.TimeOfDay > new TimeSpan(21, 0, 0))
+            {
+                origin -= 110;
+            }
+            return origin;
         }
     }
 }

@@ -156,102 +156,103 @@ BoardingGate SearchBoardingGate(Dictionary<string, BoardingGate> boardinggateDic
     return null;
 }
 
+Queue<Flight> flightqueue = new();
+
+foreach (var flight in flightsDict.Values)
+{
+    bool check = false;
+    foreach (var gate in boardinggateDict.Values)
+    {
+        if (gate.Flight == flight)
+        {
+            check = true;
+            break;
+        }
+    }
+    if (check is false)
+    {
+        flightqueue.Enqueue(flight);
+    }
+}
+
+Console.WriteLine($"Number of flights not assigned to boarding gate: {flightqueue.Count}");
+int bgcount = 0;
+foreach (var gate in boardinggateDict.Values)
+{
+    if (gate.Flight is null)
+    {
+        bgcount++;
+    }
+}
+Console.WriteLine($"Number of Boarding Gates that do not have any flights assigned: {bgcount}");
+
+while (flightqueue.Count > 0)
+{
+    Flight flightassignment = flightqueue.Dequeue();
+    foreach (var gate in boardinggateDict.Values)
+    {
+        if (gate.Flight == null)
+        {
+            if (flightassignment is DDJBFlight && gate.SupportsDDJB)
+            {
+                gate.Flight = flightassignment;
+                break;
+            }
+            else if (flightassignment is CFFTFlight && gate.SupportsCFFT)
+            {
+                gate.Flight = flightassignment;
+                break;
+            }
+            else if (flightassignment is LWTTFlight && gate.SupportsLWTT)
+            {
+                gate.Flight = flightassignment;
+                break;
+            }
+            else if (flightassignment is NORMFlight)
+            {
+                gate.Flight = flightassignment;
+                break;
+            }
+        }
+    }
+}
+
+int bgflightassignment = 0;
+string[] flightsheading = flights[0].Split(',');
+Console.WriteLine($"{flightsheading[0],-16} {flightsheading[1],-20} {flightsheading[2],-25} {flightsheading[3]}");
+foreach (var flight in flightsDict.Values)
+{
+    bool check = false;
+    BoardingGate boardingGate = null;
+    foreach (var gate in boardinggateDict.Values)
+    {
+        if (gate.Flight == flight)
+        {
+            check = true;
+            boardingGate = gate;
+            break;
+        }
+    }
+    if (check)
+    {
+        Console.WriteLine($"{flight,-20}\t {boardingGate.GateName}");
+        bgflightassignment++;
+    }
+    else
+    {
+        Console.WriteLine(flight.ToString());
+    }
+}
+Console.WriteLine("");
+Console.WriteLine("Number of Flights and Boarding Gates processed and assigned: " + bgflightassignment);
+
+Console.WriteLine($"Percentage Flights and Boarding Gates processed and assigned: {(bgflightassignment/Convert.ToDouble(flightsDict.Count) * 100).ToString("F2")}%");
+
 Console.WriteLine("");
 Console.WriteLine("");
 
 while (true)
-{
-    Queue<Flight> flightqueue = new();
-
-    foreach (var flight in flightsDict.Values)
-    {
-        bool check = false;
-        foreach (var gate in boardinggateDict.Values)
-        {
-            if (gate.Flight == flight)
-            {
-                check = true;
-                break;
-            }
-        }
-        if (check is false)
-        {
-            flightqueue.Enqueue(flight);
-        }
-    }
-
-    Console.WriteLine($"Number of flights not assigned to boarding gate: {flightqueue.Count}");
-    int bgcount = 0;
-    foreach (var gate in boardinggateDict.Values)
-    {
-        if (gate.Flight is null)
-        {
-            bgcount++;
-        }
-    }
-    Console.WriteLine($"Number of Boarding Gates that do not have any flights assigned: {bgcount}");
-
-    while (flightqueue.Count > 0)
-    {
-        Flight flightassignment = flightqueue.Dequeue();
-        foreach (var gate in boardinggateDict.Values)
-        {
-            if (gate.Flight == null)
-            {
-                if (flightassignment is DDJBFlight && gate.SupportsDDJB)
-                {
-                    gate.Flight = flightassignment;
-                    break;
-                }
-                else if (flightassignment is CFFTFlight && gate.SupportsCFFT)
-                {
-                    gate.Flight = flightassignment;
-                    break;
-                }
-                else if (flightassignment is LWTTFlight && gate.SupportsLWTT)
-                {
-                    gate.Flight = flightassignment;
-                    break;
-                }
-                else if (flightassignment is NORMFlight)
-                {
-                    gate.Flight = flightassignment;
-                    break;
-                }
-            }
-        }
-    }
-
-    int bgflightassignment = 0;
-
-    foreach (var flight in flightsDict.Values)
-    {
-        bool check = false;
-        BoardingGate boardingGate = null;
-        foreach (var gate in boardinggateDict.Values)
-        {
-            if (gate.Flight == flight)
-            {
-                check = true;
-                boardingGate = gate;
-                break;
-            }
-        }
-        if (check)
-        {
-            Console.WriteLine($"{flight.ToString(),-20}\t {boardingGate.GateName}");
-            bgflightassignment++;
-        }
-        else
-        {
-            Console.WriteLine(flight.ToString());
-        }
-    }
-
-    Console.WriteLine("Number of Flights and Boarding Gates processed and assigned: " + bgflightassignment);
-    Console.WriteLine("");
-
-    Console.WriteLine("=============================================");
+{    Console.WriteLine("=============================================");
     Console.WriteLine("Welcome to Changi Airport Terminal 5");
     Console.WriteLine("=============================================");
     Console.WriteLine("1. List All Flights");
@@ -281,7 +282,7 @@ while (true)
                 Console.WriteLine("=============================================");
                 Console.WriteLine("List of Flights for Changi Airport Terminal 5");
                 Console.WriteLine("=============================================");
-                string[] flightsheading = flights[0].Split(',');
+                flightsheading = flights[0].Split(',');
                 Console.WriteLine($"{flightsheading[0],-16} {flightsheading[1],-20} {flightsheading[2],-25} {flightsheading[3]} Time");
                 foreach (var flight in flightsDict.Values)
                 {
@@ -653,3 +654,4 @@ while (true)
         Console.WriteLine("");
     }
 }
+

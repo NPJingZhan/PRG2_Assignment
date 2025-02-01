@@ -15,9 +15,16 @@ namespace PRG_Assignment
     {
         public NORMFlight(string flightnum, string origin, string destination, DateTime expectedtime, string status) : base(flightnum, origin, destination, expectedtime, status) { }
 
-    public override string ToString()
+        public override string ToString()
         {
             return $"{FlightNumber,-16} {Orign,-20} {Destination,-25} {ExpectedTime}";
+        }
+
+        public override double CalculateFees(double origin)
+        {
+            base.CalculateFees(origin);
+            origin -= 50;
+            return origin;
         }
     }
 }

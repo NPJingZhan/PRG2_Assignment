@@ -31,5 +31,24 @@ namespace PRG_Assignment
         {
             return $"{GateName, -16} {SupportsCFFT,-8} {SupportsDDJB, -8} {SupportsLWTT, -8}";
         }
+        public double CalculateFees(double origin)
+        {
+            if (Flight is CFFTFlight)
+            {
+                return origin + 150;
+            }
+            else if (Flight is DDJBFlight)
+            {
+                return (origin + 300);
+            }
+            else if (Flight is LWTTFlight)
+            {
+                return (origin + 500);
+            }
+            else
+            {
+                return origin;
+            }
+        }
     }
 }

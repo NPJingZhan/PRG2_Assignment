@@ -22,6 +22,11 @@ namespace PRG_Assignment
         {
             return $"{FlightNumber,-16} {Orign,-20} {Destination,-25} {ExpectedTime}";
         }
+        public override double CalculateFees(double origin)
+        {
+            base.CalculateFees(origin);
+            return origin + RequestFee;
+        }
     }
 }
 

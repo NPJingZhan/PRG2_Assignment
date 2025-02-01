@@ -32,5 +32,15 @@ namespace PRG_Assignment
             Flights[flight.FlightNumber] = flight;
             return true;
         }
+
+        public double CalculateFees(double origin)
+        {
+            if (Flights.Count > 5)
+            {
+                origin *= 0.03;
+            }
+            origin -= Math.Floor((double)Flights.Count / 3) * 350;
+            return origin;
+        }
     }
 }

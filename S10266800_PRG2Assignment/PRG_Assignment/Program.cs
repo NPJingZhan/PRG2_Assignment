@@ -8,9 +8,9 @@ using System.Xml.Linq;
 // Student Name : Sew Jing Zhan
 //==========================================================
 
-Dictionary<string, Airline> airlineDict = new Dictionary<string, Airline>();
-Dictionary<string, Flight> flightsDict = new Dictionary<string, Flight>();
-Dictionary<string, BoardingGate> boardinggateDict = new Dictionary<string, BoardingGate>();
+Dictionary<string, Airline> airlineDict = new();
+Dictionary<string, Flight> flightsDict = new();
+Dictionary<string, BoardingGate> boardinggateDict = new();
 
 Console.WriteLine("Loading Airlines...");
 string[] airlines = File.ReadAllLines("airlines.csv");
@@ -94,6 +94,16 @@ for (int i = 1; i < flights.Length; i++)
 }
 Console.WriteLine(flights.Count() - 1 + " Flights Loaded!");
 
+void ListingAirlines()
+{
+    string[] airlineheading = airlines[0].Split(",");
+    Console.WriteLine($"{airlineheading[0],-18} {airlineheading[1]}");
+    foreach (var airline in airlineDict)
+    {
+        Console.WriteLine($"{airline.Key,-18} {airline.Value.Name}");
+    }
+}
+
 void ReturnToMenu()
 {
     while (true)
@@ -151,6 +161,96 @@ Console.WriteLine("");
 
 while (true)
 {
+    Queue<Flight> flightqueue = new();
+
+    foreach (var flight in flightsDict.Values)
+    {
+        bool check = false;
+        foreach (var gate in boardinggateDict.Values)
+        {
+            if (gate.Flight == flight)
+            {
+                check = true;
+                break;
+            }
+        }
+        if (check is false)
+        {
+            flightqueue.Enqueue(flight);
+        }
+    }
+
+    Console.WriteLine($"Number of flights not assigned to boarding gate: {flightqueue.Count}");
+    int bgcount = 0;
+    foreach (var gate in boardinggateDict.Values)
+    {
+        if (gate.Flight is null)
+        {
+            bgcount++;
+        }
+    }
+    Console.WriteLine($"Number of Boarding Gates that do not have any flights assigned: {bgcount}");
+
+    while (flightqueue.Count > 0)
+    {
+        Flight flightassignment = flightqueue.Dequeue();
+        foreach (var gate in boardinggateDict.Values)
+        {
+            if (gate.Flight == null)
+            {
+                if (flightassignment is DDJBFlight && gate.SupportsDDJB)
+                {
+                    gate.Flight = flightassignment;
+                    break;
+                }
+                else if (flightassignment is CFFTFlight && gate.SupportsCFFT)
+                {
+                    gate.Flight = flightassignment;
+                    break;
+                }
+                else if (flightassignment is LWTTFlight && gate.SupportsLWTT)
+                {
+                    gate.Flight = flightassignment;
+                    break;
+                }
+                else if (flightassignment is NORMFlight)
+                {
+                    gate.Flight = flightassignment;
+                    break;
+                }
+            }
+        }
+    }
+
+    int bgflightassignment = 0;
+
+    foreach (var flight in flightsDict.Values)
+    {
+        bool check = false;
+        BoardingGate boardingGate = null;
+        foreach (var gate in boardinggateDict.Values)
+        {
+            if (gate.Flight == flight)
+            {
+                check = true;
+                boardingGate = gate;
+                break;
+            }
+        }
+        if (check)
+        {
+            Console.WriteLine($"{flight.ToString(),-20}\t {boardingGate.GateName}");
+            bgflightassignment++;
+        }
+        else
+        {
+            Console.WriteLine(flight.ToString());
+        }
+    }
+
+    Console.WriteLine("Number of Flights and Boarding Gates processed and assigned: " + bgflightassignment);
+    Console.WriteLine("");
+
     Console.WriteLine("=============================================");
     Console.WriteLine("Welcome to Changi Airport Terminal 5");
     Console.WriteLine("=============================================");
@@ -159,8 +259,6 @@ while (true)
     Console.WriteLine("3. Assign a Boarding Gate to a Flight");
     Console.WriteLine("4. Create Flight");
     Console.WriteLine("5. Display Airline Flights");
-    Console.WriteLine("6. Modify Flight Details");
-    Console.WriteLine("7. Display Flight Schedule");
     Console.WriteLine("0. Exit");
     Console.WriteLine("");
     Console.WriteLine("Please enter your option:");
@@ -168,7 +266,7 @@ while (true)
     try
     {
         int option = Convert.ToInt32(Console.ReadLine());
-        if (option < 0 || option > 7)
+        if (option < 0 || option > 5)
         {
             throw new ArgumentOutOfRangeException("x");
         }
@@ -214,6 +312,7 @@ while (true)
                 Console.WriteLine("=============================================");
                 Console.WriteLine("Assign a Boarding Gate to a Flight");
                 Console.WriteLine("=============================================");
+
                 while (true)
                 {
                     Console.WriteLine("Enter flight number: ");
@@ -230,16 +329,30 @@ while (true)
                 }
                 while (true)
                 {
-                    Console.WriteLine("Enter Boarding Gate Name:");
-                    string bgno = Console.ReadLine().ToUpper();
-                    bgvalid = SearchBoardingGate(boardinggateDict, bgno);
-                    if (bgvalid is not null)
+                    try
                     {
-                        break;
+                        Console.WriteLine("Enter Boarding Gate Name:");
+                        string bgno = Console.ReadLine().ToUpper();
+                        bgvalid = SearchBoardingGate(boardinggateDict, bgno);
+                        if (bgvalid is not null)
+                        {
+                            if (bgvalid.Flight != null)
+                            {
+                                throw new ArgumentException();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Boarding Gate Number");
+                        }
                     }
-                    else
+                    catch
                     {
-                        Console.WriteLine("Invalid Boarding Gate Number");
+                        Console.WriteLine("Boarding Gate has already been assigned. Enter another Boarding Gate");
                     }
                 }
                 Console.WriteLine($"Flight Number: {flightvalid.FlightNumber}");
@@ -399,7 +512,7 @@ while (true)
                         catch
                         {
                             Console.WriteLine("Input must be in the format 'City (XXX)' e.g. 'Dubai (DUB)'");
-                        }                      
+                        }
                     }
 
                     if (flightdest == flightorigin)
@@ -459,7 +572,7 @@ while (true)
 
                         using (StreamWriter writer = new StreamWriter("flights.csv", append: true))
                         {
-                            if(src == "NONE")
+                            if (src == "NONE")
                             {
                                 writer.WriteLine($"{flightnum},{flightorigin},{flightdest},{flightexpect},");
                             }
@@ -501,17 +614,10 @@ while (true)
                 break;
             case 5:
                 Airline airlinevalid = null;
-
                 Console.WriteLine("=============================================");
                 Console.WriteLine("List of Airlines for Changi Airport Terminal 5");
                 Console.WriteLine("=============================================");
-                string[] airlineheading = airlines[0].Split(",");
-                Console.WriteLine($"{airlineheading[0],-18} {airlineheading[1]}");
-                foreach (var airline in airlineDict)
-                {
-                    Console.WriteLine($"{airline.Key,-18} {airline.Value.Name}");
-                }
-
+                ListingAirlines();
                 while (true)
                 {
                     Console.WriteLine("Enter Airline Code:");
@@ -537,12 +643,6 @@ while (true)
                 }
                 Console.WriteLine("");
                 ReturnToMenu();
-                Console.WriteLine("");
-                break;
-            case 6:
-                Console.WriteLine("");
-                break;
-            case 7:
                 Console.WriteLine("");
                 break;
         }

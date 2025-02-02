@@ -31,25 +31,18 @@ namespace PRG_Assignment
         {
             return $"{FlightNumber} {Orign} {Destination} {ExpectedTime}";
         }
-        public virtual double CalculateFees(double origin)
+        public virtual double CalculateFees()
         {
-            if (Destination == "Singapore(SIN)")
+            double fees = 300;
+            if (Destination == "Singapore (SIN)")
             {
-                origin += 500;
+                fees += 500;
             }
             if (Orign == "Singapore (SIN)")
             {
-                origin += 800;
+                fees += 800;
             }
-            if (Orign == "Dubai (DXB)" || Orign == "Bangkok (BKK)" || Orign == "Tokyo (NRT)")
-            {
-                origin -= 25;
-            }
-            if (ExpectedTime.TimeOfDay < new TimeSpan(11, 0, 0) || ExpectedTime.TimeOfDay > new TimeSpan(21, 0, 0))
-            {
-                origin -= 110;
-            }
-            return origin;
+            return fees;
         }
     }
 }

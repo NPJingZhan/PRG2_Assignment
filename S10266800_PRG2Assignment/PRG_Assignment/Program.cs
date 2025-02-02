@@ -260,6 +260,7 @@ while (true)
     Console.WriteLine("3. Assign a Boarding Gate to a Flight");
     Console.WriteLine("4. Create Flight");
     Console.WriteLine("5. Display Airline Flights");
+    Console.WriteLine("6. Calculate Fees");
     Console.WriteLine("0. Exit");
     Console.WriteLine("");
     Console.WriteLine("Please enter your option:");
@@ -267,7 +268,7 @@ while (true)
     try
     {
         int option = Convert.ToInt32(Console.ReadLine());
-        if (option < 0 || option > 5)
+        if (option < 0 || option > 6)
         {
             throw new ArgumentOutOfRangeException("x");
         }
@@ -646,6 +647,75 @@ while (true)
                 ReturnToMenu();
                 Console.WriteLine("");
                 break;
+            case 6:
+                bool allFlightsAssigned = true;
+                foreach (var flight in flightsDict.Values)
+                {
+                    bool assigned = false;
+                    foreach (var gate in boardinggateDict.Values)
+                    {
+                        if (gate.Flight == flight)
+                        {
+                            assigned = true;
+                            break;
+                        }
+                    }
+                    if (!assigned)
+                    {
+                        allFlightsAssigned = false;
+                        break;
+                    }
+                }
+
+                if (allFlightsAssigned)
+                {
+                    Console.WriteLine("=============================================");
+                    Console.WriteLine("Fees for each Airline");
+                    Console.WriteLine("=============================================");
+                    foreach (Airline airline1 in airlineDict.Values)
+                    {
+                        double fees = 0;
+                        double discount = 0;
+                        foreach (Flight flight in airline1.Flights.Values)
+                        {
+                            fees += flight.CalculateFees();
+
+                            if (airline1.Flights.Count > 5)
+                            {
+                                discount += fees * 0.03;
+                                Console.WriteLine(fees * 0.03);
+                            }
+
+                            if (airline1.Flights.Count % 3 == 0)
+                            {
+                                discount += 350 * (airline1.Flights.Count / 3);
+                            }
+
+                            if (flight.Orign == "Dubai (DXB)" || flight.Orign == "Bangkok (BKK)" || flight.Orign == "Tokyo (NRT)")
+                            {
+                                discount += 25;
+                            }
+
+                            if (flight is NORMFlight)
+                            {
+                                discount += 50;
+                            }
+                        }
+
+                        Console.WriteLine($"{airline1.Name} Fees");
+                        Console.WriteLine("Total Fees: $" + fees);
+                        Console.WriteLine("Discount: $" + discount);
+                        Console.WriteLine($"Subtotal: ${fees - discount}");
+                        Console.WriteLine("");
+                    }
+                    ReturnToMenu();
+                }
+                else
+                {
+                    Console.WriteLine("Not all flights are assigned to boarding gates.");
+                    ReturnToMenu();
+                }
+                break;
         }
     }
     catch
@@ -654,4 +724,3 @@ while (true)
         Console.WriteLine("");
     }
 }
-
